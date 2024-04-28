@@ -124,7 +124,6 @@ public class MainViewController {
     protected void populateChoiceBoxes() {
         type.getItems().add("Landmark");
         type.getItems().add("Junction");
-        //a
     }
 
     @FXML
