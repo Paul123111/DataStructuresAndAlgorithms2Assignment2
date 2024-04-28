@@ -63,6 +63,8 @@ public class MainViewController {
     // slider to cultural makes it visit every tourist attraction, in between makes it choose a
     // slight detour from shortest path for extra culture
 
+    //TODO maybe weight culture and distance depending on slider
+
     //TODO cultural/historic can use only one factor (aka don't need others, can add if I want to), such as
     // the year an attraction was made
 
