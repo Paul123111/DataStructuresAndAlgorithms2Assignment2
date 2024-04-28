@@ -40,7 +40,6 @@ class AdjacencyMatrixTest {
         AdjacencyMatrix.connectNodesUndirected(graph.getAMat(), 1, 3, 4);
         AdjacencyMatrix.connectNodesUndirected(graph.getAMat(), 3, 2, 1);
 
-        System.out.println(AdjacencyMatrix.toString(graph.getAMat(), graph.getNodes().size()));
         assertArrayEquals(new int[][]{{0,0,0,0},{0,0,0,4},{0,0,0,1},{0,4,1,0}}, graph.getAMat());
     }
 
@@ -51,6 +50,18 @@ class AdjacencyMatrixTest {
         assertTrue(AdjacencyMatrix.isConnected(graph.getAMat(),1,3));
         assertFalse(AdjacencyMatrix.isConnected(graph.getAMat(),1,2));
         assertTrue(AdjacencyMatrix.isConnected(graph.getAMat(),2,3));
+    }
+
+    @Test
+    void connectedValue(){
+
+        AdjacencyMatrix.connectNodesUndirected(graph.getAMat(), 1, 3, 4);
+        AdjacencyMatrix.connectNodesUndirected(graph.getAMat(), 3, 2, 1);
+        assertEquals(AdjacencyMatrix.connectedValue(graph.getAMat(), 1,3),4);
+        assertEquals(AdjacencyMatrix.connectedValue(graph.getAMat(), 3,1),4);
+        assertEquals(AdjacencyMatrix.connectedValue(graph.getAMat(), 3,2),1);
+        assertEquals(AdjacencyMatrix.connectedValue(graph.getAMat(), 1,2),0);
+
     }
 
 }
