@@ -31,7 +31,6 @@ class AdjacencyMatrixTest {
     @Test
     void createMatrix() {
         int[][] a = AdjacencyMatrix.createMatrix(graph.getNodes().size());
-        System.out.println(AdjacencyMatrix.toString(a, graph.getNodes().size()));
         assertArrayEquals(new int[4][4], a);
     }
 
