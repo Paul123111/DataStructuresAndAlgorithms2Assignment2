@@ -5,4 +5,6 @@ public interface SearchByField<R> {
     R getID();
     int getX();
     int getY();
+    int getCulture();
+    //boolean hasCulture();
 }
