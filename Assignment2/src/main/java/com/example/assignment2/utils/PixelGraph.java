@@ -6,10 +6,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PixelGraph {
 
@@ -35,7 +32,7 @@ public class PixelGraph {
         firstAgendaPath[0] = origin;
         agenda.add(firstAgendaPath);
         resultPath=findPathBreadthFirst(agenda,null,destination,pixels); //Get single BFS path (will be shortest)
-        resultPath = Utilities.reverseArray(resultPath);
+        //resultPath = Arrays.sort(resultPath, ((int a, b) -> ((int) a - (int) b)));
         return resultPath;
     }
 
@@ -49,7 +46,7 @@ public class PixelGraph {
 
        encountered.add(currentNode); //Record current node as encountered so it isn't revisited again
        for(int adjNode : getAdjacentPixels(currentNode,pixels,width)) //For each adjacent node
-           if(!encountered.contains(adjNode)) { //If it hasn't already been encountered
+           if(adjNode!=-1 && !encountered.contains(adjNode)) { //If it hasn't already been encountered
                int[] newPath= new int[nextPath.length+1]; //Create a new path list as a copy of the current/next path
                System.arraycopy(nextPath,0,newPath,1,nextPath.length);
                newPath[0]=adjNode; //And add the adjacent node to the front of the new copy
@@ -96,15 +93,15 @@ public class PixelGraph {
                 validPixelCount--;
             }
         }
-        int[] validPixels = new int[validPixelCount];
-        int index = 0;
-        for(int i = 0; i<validPixels.length;i++){
-            if(adjacentPixels[i] != -1){
-                validPixels[index] = adjacentPixels[i];
-                index ++;
-            }
-        }
-       return validPixels;
+//        int[] validPixels = new int[validPixelCount];
+//        int index = 0;
+//        for(int i = 0; i<validPixels.length;i++){
+//            if(adjacentPixels[i] != -1){
+//                validPixels[index] = adjacentPixels[i];
+//                index ++;
+//            }
+//        }
+       return adjacentPixels;
    }
 
    static boolean isTouchingLeft(int pixel, int width){

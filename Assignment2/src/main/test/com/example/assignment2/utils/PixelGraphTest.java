@@ -28,7 +28,10 @@ class PixelGraphTest {
     @org.junit.jupiter.api.Test
     void breadthFirstSearch() {
         PixelGraph.setWidth(5);
-        PixelGraph.breadthFirstSearchWrapper(19,4,graph);
+        int[] a = PixelGraph.breadthFirstSearchWrapper(19,4,graph);
+        for (int i : a) {
+            System.out.println(i);
+        }
     }
 
     @org.junit.jupiter.api.Test
