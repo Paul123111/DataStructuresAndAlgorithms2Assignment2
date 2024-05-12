@@ -51,7 +51,7 @@ public class PixelGraph {
        for(int adjNode : getAdjacentPixels(currentNode,pixels,width)) //For each adjacent node
            if(!encountered.contains(adjNode)) { //If it hasn't already been encountered
                int[] newPath= new int[nextPath.length+1]; //Create a new path list as a copy of the current/next path
-               System.arraycopy(nextPath,0,newPath,1,newPath.length);
+               System.arraycopy(nextPath,0,newPath,1,nextPath.length);
                newPath[0]=adjNode; //And add the adjacent node to the front of the new copy
                agenda.add(newPath); //Add the new path to the end of agenda (end->BFS!)
            }
@@ -89,10 +89,11 @@ public class PixelGraph {
        adjacentPixels[7] = isTouchingBottom(pixel,pixels,width) && isTouchingLeft(pixel,width)? -1:pixel+width-1;
 
        int validPixelCount = 8;
+
         for(int i = 0; i<adjacentPixels.length;i++){
             if(adjacentPixels[i]!=-1 && pixels[adjacentPixels[i]] == 0){
                 adjacentPixels[i] = -1;
-                validPixelCount --;
+                validPixelCount--;
             }
         }
         int[] validPixels = new int[validPixelCount];

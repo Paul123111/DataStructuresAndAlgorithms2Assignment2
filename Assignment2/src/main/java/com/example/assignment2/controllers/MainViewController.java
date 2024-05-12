@@ -110,6 +110,9 @@ public class MainViewController {
     private Graph<Node, String> graph;
     private BreadthFirstGraph<Node, String> breadthFirstGraph;
     private int totalCulture = 0;
+    private int[] pixels;
+    private int pixelStart = 0;
+    private int pixelDestination = 0;
 
     @FXML
     public void initialize() throws FileNotFoundException, URISyntaxException {
@@ -121,6 +124,8 @@ public class MainViewController {
         populateChoiceBoxes();
         setSliders();
         validateTextFields();
+
+        setPixelPoints();
 
         //connectAllPoints();
     }
@@ -146,7 +151,10 @@ public class MainViewController {
         mapView.setFitWidth(600);
         mapView.setFitHeight(400);
         mapView.setPreserveRatio(false);
-        mapView.setImage(new Image(Driver.class.getResource("images/ParisLandmarks.png").toString()));
+        Image image = new Image(Driver.class.getResource("images/ParisLandmarks.png").toString());
+        mapView.setImage(image);
+        pixels = PixelGraph.getPixels(image);
+        PixelGraph.setWidth(600);
     }
 
     //reads in csv file, then adds nodes to arraylist (add to graph) - DONE
@@ -274,6 +282,37 @@ public class MainViewController {
         });
     }
 
+    private void setPixelPoints() {
+        mapView.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+            double x = mouseEvent.getX();
+            double y = mouseEvent.getY();
+
+            ImageView view = (ImageView) mouseEvent.getSource();
+            Bounds bounds = view.getLayoutBounds();
+            double xScale = bounds.getWidth() / view.getImage().getWidth();
+            double yScale = bounds.getHeight() / view.getImage().getHeight();
+
+            x /= xScale;
+            y /= yScale;
+
+
+            int xCord = (int) x;
+            int yCord = (int) y;
+
+            x *= xScale;
+            y *= yScale;
+
+            int imageX = (int) x;
+            int imageY = (int) y;
+
+            if (mouseEvent.isPrimaryButtonDown()) {
+                pixelStart = xCord + yCord*600;
+            } else if (mouseEvent.isSecondaryButtonDown()) {
+                pixelDestination = xCord + yCord*600;
+            }
+        });
+    }
+
     @FXML
     protected void connectAllPoints() {
         List<Node> nodes = graph.getNodes();
@@ -317,6 +356,14 @@ public class MainViewController {
     @FXML
     protected void drawPixel(int x, int y, Color color){
 
+    }
+
+    @FXML
+    protected void breadthFirstSearchPixelByPixel() {
+        int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
+        Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisRedDots.png").toString()), path);
+
+        mapView.setImage(image);
     }
 
     @FXML
