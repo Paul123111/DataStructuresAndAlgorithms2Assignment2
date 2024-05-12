@@ -61,6 +61,8 @@ public class MainViewController {
     // slider to cultural makes it visit every tourist attraction, in between makes it choose a
     // slight detour from shortest path for extra culture
 
+    //TODO maybe weight culture and distance depending on slider
+
     //TODO cultural/historic can use only one factor (aka don't need others, can add if I want to), such as
     // the year an attraction was made
 
@@ -95,16 +97,19 @@ public class MainViewController {
     @FXML
     private TextField wantedNode;
     @FXML
-    private TextField start;
+    private ChoiceBox<String> start;
     @FXML
-    private TextField destination;
+    private ChoiceBox<String> destination;
     @FXML
     private TextField numRoutes;
     @FXML
     private TreeView<Button> routeTreeView;
+    @FXML
+    private Slider cultureSlider;
 
     private Graph<Node, String> graph;
     private BreadthFirstGraph<Node, String> breadthFirstGraph;
+    private int totalCulture = 0;
 
     @FXML
     public void initialize() throws FileNotFoundException, URISyntaxException {
@@ -114,6 +119,7 @@ public class MainViewController {
         editMap();
 
         populateChoiceBoxes();
+        setSliders();
         validateTextFields();
 
         //connectAllPoints();
@@ -123,7 +129,12 @@ public class MainViewController {
     protected void populateChoiceBoxes() {
         type.getItems().add("Landmark");
         type.getItems().add("Junction");
-        //a
+    }
+
+    @FXML
+    protected void setSliders() {
+        cultureSlider.setMin(0);
+        cultureSlider.setMax(0.9);
     }
 
     @FXML
@@ -177,6 +188,12 @@ public class MainViewController {
         //System.out.println(AdjacencyMatrix.toString(graph.getAMat(), graph.getNodes().size()));
 
         sc.close();
+
+        for (Node node : graph.getNodes()) {
+            totalCulture += node.getCulture();
+            start.getItems().add(node.getName());
+            destination.getItems().add(node.getName());
+        }
     }
 
 
@@ -328,14 +345,14 @@ public class MainViewController {
     @FXML
     protected void depthFirstRoute() {
         clearLines();
-        drawRoute(graph.findPathDepthFirstWrapper(start.getText(), destination.getText()));
+        drawRoute(graph.findPathDepthFirstWrapper(start.getValue(), destination.getValue()));
     }
 
     @FXML
     protected void depthFirstRoutes() {
         clearLines();
 
-        List<List<Node>> routes = graph.findAllPathsDepthFirstWrapper(start.getText(), destination.getText());
+        List<List<Node>> routes = graph.findAllPathsDepthFirstWrapper(start.getValue(), destination.getValue());
         Collections.shuffle(routes);
 //        double hue = 0;
 
@@ -393,11 +410,21 @@ public class MainViewController {
 
     @FXML
     protected void shortestPath() {
-        CostedPath<Node> costedPath = graph.findCheapestPathDijkstraWrapper(start.getText(), destination.getText());
+        CostedPath<Node> costedPath = graph.findCheapestPathDijkstraWrapper(start.getValue(), destination.getValue(), cultureSlider.getValue());
         System.out.println(costedPath.getCost());
+        System.out.println(costedPath.getCulture());
         clearLines();
         drawRoute(costedPath.getCheapestPath());
     }
+
+//    @FXML
+//    protected void costCulturePath() {
+//        CostedPath<Node> costedPath = graph.findCostCulturePathDijkstraWrapper(start.getValue(), destination.getValue(),
+//                cultureSlider.getValue(), totalCulture);
+//        System.out.println(costedPath.getCost());
+//        clearLines();
+//        drawRoute(costedPath.getCheapestPath());
+//    }
 
     private void clearLines() {
         imagePane.getChildren().removeIf((e) -> (e instanceof Line));

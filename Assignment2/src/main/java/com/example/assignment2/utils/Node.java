@@ -47,6 +47,13 @@ public class Node implements SearchByField<String> {
         return y;
     }
 
+    @Override
+    public int getCulture() {
+        if (type.equals("Landmark"))
+            return 2024-year;
+        return 0;
+    }
+
     public String getName() {
         return name;
     }

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.ImageView?>
@@ -101,13 +102,13 @@
                         <FlowPane prefHeight="6.0" prefWidth="726.0">
                            <children>
                               <Label text="Start: " />
-                              <TextField fx:id="start" prefHeight="26.0" prefWidth="94.0" />
+                              <ChoiceBox prefHeight="26.0" prefWidth="97.0" fx:id="start"/>
                               <Label text="Destination: ">
                                  <FlowPane.margin>
                                     <Insets left="10.0" />
                                  </FlowPane.margin>
                               </Label>
-                              <TextField fx:id="destination" prefHeight="26.0" prefWidth="94.0" />
+                              <ChoiceBox prefHeight="26.0" prefWidth="97.0" fx:id="destination"/>
                               <Button mnemonicParsing="false" onAction="#depthFirstRoute" text="Show Route (Depth-First)">
                                  <FlowPane.margin>
                                     <Insets left="10.0" />
@@ -140,6 +141,17 @@
                                     <Insets left="10.0" />
                                  </FlowPane.margin>
                               </Button>
+                              <Label text="Shortest">
+                                 <FlowPane.margin>
+                                    <Insets left="10.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <Slider fx:id="cultureSlider">
+                                 <FlowPane.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </FlowPane.margin>
+                              </Slider>
+                              <Label text="Historical" />
                            </children>
                            <padding>
                               <Insets left="40.0" />

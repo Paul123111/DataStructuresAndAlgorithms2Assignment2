@@ -138,21 +138,33 @@ public class Graph<T extends SearchByField<R>, R> {
                 nodes.get(findIndexByField(lookingfor)));
     }
 
-    public Map<T, Integer> initialiseNodeValues(T startNode) {
+    public Map<T, Double> initialiseNodeValues(T startNode) {
         //method to initialise node values for dijkstra's algorithm
-        Map<T, Integer> nodeValues = new HashMap<>();
+        Map<T, Double> nodeValues = new HashMap<>();
         for (T t : nodes) {
-            nodeValues.put(t, Integer.MAX_VALUE);
+            nodeValues.put(t, Double.MAX_VALUE);
         }
-        nodeValues.replace(startNode, 0);
+        nodeValues.replace(startNode, (double) 0);
         return nodeValues;
     }
 
-    public CostedPath<T> findCheapestPathDijkstra(T startNode, T lookingfor){
-        Map<T, Integer> nodeValues = initialiseNodeValues(startNode);
+//    public Map<T, Double> initialiseCultureValues() {
+//        //method to initialise node values for dijkstra's algorithm
+//        Map<T, Double> nodeValues = new HashMap<>();
+//        for (T t : nodes) {
+//            nodeValues.put(t, 0);
+//        }
+//        return nodeValues;
+//    }
+
+    //TODO clean up code
+    public CostedPath<T> findCheapestPathDijkstra(T startNode, T lookingfor, int[][] mat){
+        Map<T, Double> nodeValues = initialiseNodeValues(startNode);
         List<T> encountered=new ArrayList<>(), unencountered=new ArrayList<>();
         CostedPath<T> costedPath = new CostedPath();
         int size = nodes.size();
+        int preferredDistance = 1000;
+        int preferredCulture = 10000;
 
         unencountered.add(startNode); //Add the start node as the only value in the unencountered list to start
         T currentNode;
@@ -160,46 +172,200 @@ public class Graph<T extends SearchByField<R>, R> {
         do{ //Loop until unencountered list is empty
             currentNode=unencountered.remove(0); //Get the first unencountered node (sorted list, so will have lowest value)
             encountered.add(currentNode); //Record current node in encountered list
+            //currentNode.equals(lookingfor) &&
 
             if(currentNode.equals(lookingfor)){ //Found goal - assemble path list back to start and return it
+                System.out.println(nodeValues.get(lookingfor));
+
+                currentNode=lookingfor;
                 costedPath.getCheapestPath().add(currentNode); //Add the current (goal) node to the result list (only element)
-                costedPath.setCost(nodeValues.get(currentNode)); //The total cheapest path cost is the node value of the current/goal node
+                //costedPath.setCost(nodeValues.get(currentNode)); //The total cheapest path cost is the node value of the current/goal node
+                //System.out.println(nodeValues.get(currentNode));
 
                 while(currentNode!=startNode) { //While we're not back to the start node...
                     for (int i = 0; i < size; i++) {
                         //if current node is connected to this node on adj matrix &&
                         // (currentNode.value-linkBetweenCurrentAndThis.value==thisNode.value)
                         if(amat[nodes.indexOf(currentNode)][i]!=0 &&
-                                (nodeValues.get(currentNode)-amat[nodes.indexOf(currentNode)][i])==nodeValues.get(nodes.get(i))) {
-                            //System.out.println(nodes.get(i).getID() + ", " + currentNode.getID());
+                                (nodeValues.get(currentNode)-mat[nodes.indexOf(currentNode)][i])==nodeValues.get(nodes.get(i))) {
+
+                            System.out.println(nodeValues.get(currentNode) + "," + currentNode.getID());
+                            System.out.println("a"+(nodeValues.get(currentNode)-mat[nodes.indexOf(currentNode)][i]));
+                            System.out.println(nodeValues.get(nodes.get(i))+ "," + nodes.get(i).getID());
 
                             costedPath.getCheapestPath().add(0, nodes.get(i)); //Add the identified path node to the front of the result list
+                            costedPath.setCost(costedPath.getCost()+amat[nodes.indexOf(currentNode)][i]);
+                            costedPath.setCulture(costedPath.getCulture()+((int) (((currentNode.getCulture() + nodes.get(i).getCulture())) * 0.1)));
                             currentNode=nodes.get(i); //Move the currentNode reference back to the identified path node
-                            //foundPrevPathNode=true; //Set the flag to break the outer loop
                             break;
                         }
                     }
                 }
-                //Reset the node values for all nodes to (effectively) infinity so we can search again (leave no footprint!)
-//                for(T t : encountered) nodeValues.replace(t, Integer.MAX_VALUE);
-//                for(T t : unencountered) nodeValues.replace(t, Integer.MAX_VALUE);
                 return costedPath; //The costed (cheapest) path has been assembled, so return it!
             }
 
             //We're not at the goal node yet, so...
-            for(int i = 0; i < size; i++) //For each edge/link from the current node...
-                if(amat[nodes.indexOf(currentNode)][i]!=0 && !encountered.contains(nodes.get(i))) { //If the node it leads to has not yet been encountered (i.e. processed)
-                    nodeValues.replace(nodes.get(i), Integer.min(nodeValues.get(nodes.get(i)),
-                            nodeValues.get(currentNode)+amat[nodes.indexOf(currentNode)][i])); //Update the node value at the end
+            for(int i = 0; i < size; i++) { //For each edge/link from the current node...
+                if (amat[nodes.indexOf(currentNode)][i] != 0 && (!encountered.contains(nodes.get(i)))) { //If the node it leads to has not yet been encountered (i.e. processed)
+                    nodeValues.replace(nodes.get(i), Double.min(nodeValues.get(nodes.get(i)),
+                            (nodeValues.get(currentNode) + mat[nodes.indexOf(currentNode)][i])));
+
+                    System.out.println(nodeValues.get(currentNode) + ", " + currentNode.getID());
+                    System.out.println(nodeValues.get(nodes.get(i)) + ", " + nodes.get(i).getID());
+
+                    //Update the node value at the end
 //of the edge to the minimum of its current value or the total of the current node's value plus the cost of the edge
-                    if(!unencountered.contains(nodes.get(i))) unencountered.add(nodes.get(i));
+                    if (!unencountered.contains(nodes.get(i))) unencountered.add(nodes.get(i));
                 }
-            Collections.sort(unencountered,(n1, n2)->nodeValues.get(n1)-nodeValues.get(n2)); //Sort in ascending node value order
+            }
+            Collections.sort(unencountered,(n1, n2)-> (int) (nodeValues.get(n1)-nodeValues.get(n2))); //Sort in ascending node value order
         }while(!unencountered.isEmpty());
         return null; //No path found, so return null
     }
 
-    public CostedPath<T> findCheapestPathDijkstraWrapper(R startNode, R lookingfor) {
-        return findCheapestPathDijkstra(nodes.get(findIndexByField(startNode)), nodes.get(findIndexByField(lookingfor)));
+    public CostedPath<T> findCheapestPathDijkstraWrapper(R startNode, R lookingfor, double cultureWeight) {
+        return findCheapestPathDijkstra(nodes.get(findIndexByField(startNode)), nodes.get(findIndexByField(lookingfor)), setCultureMatrix(cultureWeight));
     }
+
+    //TODO chooses the shortest path that meets culture threshold - finds shortest route with cultureValue over threshold
+    // connect cultureValue to routes? - or weight remaining culture and distance
+//    public CostedPath<T> findCostHistoryBalancePathDijkstra(T startNode, T lookingfor, double cultureWeight, int totalCulture){
+//        Map<T, Integer> nodeValues = initialiseNodeValues(startNode);
+//        Map<T, Integer> cultureValues = initialiseCultureValues();
+//
+//        List<T> encountered=new ArrayList<>(), unencountered=new ArrayList<>();
+//        CostedPath<T> costedPath = new CostedPath();
+//
+//        int size = nodes.size();
+//        double cultureThreshold = totalCulture*cultureWeight;
+//
+//        unencountered.add(startNode); //Add the start node as the only value in the unencountered list to start
+//        T currentNode;
+//        //((cultureValues.get(currentNode)+costedPath.getCulture())>cultureThreshold)
+//
+//        do{ //Loop until unencountered list is empty
+//            currentNode=unencountered.remove(0); //Get the first unencountered node (sorted list, so will have lowest value)
+//            encountered.add(currentNode); //Record current node in encountered list
+//
+//            if(currentNode.equals(lookingfor)){ //Found goal - assemble path list back to start and return it
+//                costedPath.getCheapestPath().add(currentNode); //Add the current (goal) node to the result list (only element)
+//                costedPath.setCost(nodeValues.get(currentNode)); //The total cheapest path cost is the node value of the current/goal node
+//
+//                while(currentNode!=startNode) { //While we're not back to the start node...
+//                    for (int i = 0; i < size; i++) {
+//                        //if current node is connected to this node on adj matrix &&
+//                        // (currentNode.value-linkBetweenCurrentAndThis.value==thisNode.value)
+//                        if(amat[nodes.indexOf(currentNode)][i]!=0 &&
+//                                (nodeValues.get(currentNode)-amat[nodes.indexOf(currentNode)][i])==nodeValues.get(nodes.get(i))) {
+//
+//                            costedPath.getCheapestPath().add(0, nodes.get(i)); //Add the identified path node to the front of the result list
+//                            costedPath.setCulture(costedPath.getCulture()+currentNode.getCulture());
+//
+//                            currentNode=nodes.get(i); //Move the currentNode reference back to the identified path node
+//                            break;
+//                        }
+//                    }
+//                }
+//                if (costedPath.getCulture() < cultureThreshold) {
+//                    currentNode = lookingfor;
+//                    System.out.println(costedPath.getCulture());
+//                    costedPath.setCheapestPath(new ArrayList<>());
+//                    costedPath.getCheapestPath().add(currentNode);
+//                } else {
+//                    return costedPath; //The costed (cheapest) path has been assembled, so return it!
+//                }
+//            }
+//
+//            //We're not at the goal node yet, so...
+//            for(int i = 0; i < size; i++) //For each edge/link from the current node...
+//                if(amat[nodes.indexOf(currentNode)][i]!=0 && !encountered.contains(nodes.get(i))) { //If the node it leads to has not yet been encountered (i.e. processed)
+//                    nodeValues.replace(nodes.get(i), Integer.min(nodeValues.get(nodes.get(i)),
+//                            nodeValues.get(currentNode)+amat[nodes.indexOf(currentNode)][i])); //Update the node value at the end
+//                    //of the edge to the minimum of its current value or the total of the current node's value plus the cost of the edge
+//                    cultureValues.replace(nodes.get(i), Integer.max(cultureValues.get(nodes.get(i)),
+//                            cultureValues.get(currentNode)+nodes.get(i).getCulture()));
+//
+//                    if(!unencountered.contains(nodes.get(i))) unencountered.add(nodes.get(i));
+//                }
+//            Collections.sort(unencountered,(n1, n2)->nodeValues.get(n1)-nodeValues.get(n2)); //Sort in ascending node value order
+//        }while(!unencountered.isEmpty());
+//        return null; //No path found, so return null
+//    }
+
+    public int[][] setCultureMatrix(double cultureWeight) {
+        int[][] cultureMat = new int[nodes.size()][nodes.size()];
+        int culture = 0;
+
+        for (int i = 0; (i < cultureMat[0].length); i++) {
+            cultureMat[i] = amat[i].clone();
+        }
+
+        for (int i = 0; i < cultureMat[0].length; i++) {
+            for (int j = 0; j < cultureMat[0].length; j++) {
+                if (AdjacencyMatrix.isConnected(cultureMat, i, j)) {
+                    culture = (int) (((nodes.get(i).getCulture() + nodes.get(j).getCulture())) * 0.1);
+                    cultureMat[i][j] = Utilities.doubleToInt((cultureMat[i][j] * (1 - cultureWeight))-(culture * cultureWeight));
+                    if (cultureMat[i][j]==0)
+                        cultureMat[i][j]=1;
+                }
+            }
+        }
+        System.out.println(AdjacencyMatrix.toString(cultureMat, cultureMat.length));
+        return cultureMat;
+    }
+
+//    public CostedPath<T> findCostCulturePathDijkstraWrapper(R startNode, R lookingfor, double cultureWeight, int totalCulture) {
+//        return findCostHistoryBalancePathDijkstra(nodes.get(findIndexByField(startNode)), nodes.get(findIndexByField(lookingfor)), cultureWeight, totalCulture);
+//    }
+
+//    public CostedPath<T> findCheapestPathDijkstra(T startNode, T lookingfor){
+//        Map<T, Integer> nodeValues = initialiseNodeValues(startNode);
+//        List<T> encountered=new ArrayList<>(), unencountered=new ArrayList<>();
+//        CostedPath<T> costedPath = new CostedPath();
+//        int size = nodes.size();
+//
+//        unencountered.add(startNode); //Add the start node as the only value in the unencountered list to start
+//        T currentNode;
+//
+//        do{ //Loop until unencountered list is empty
+//            currentNode=unencountered.remove(0); //Get the first unencountered node (sorted list, so will have lowest value)
+//            encountered.add(currentNode); //Record current node in encountered list
+//
+//            if(currentNode.equals(lookingfor)){ //Found goal - assemble path list back to start and return it
+//                costedPath.getCheapestPath().add(currentNode); //Add the current (goal) node to the result list (only element)
+//                costedPath.setCost(nodeValues.get(currentNode)); //The total cheapest path cost is the node value of the current/goal node
+//
+//                while(currentNode!=startNode) { //While we're not back to the start node...
+//                    for (int i = 0; i < size; i++) {
+//                        //if current node is connected to this node on adj matrix &&
+//                        // (currentNode.value-linkBetweenCurrentAndThis.value==thisNode.value)
+//                        if(amat[nodes.indexOf(currentNode)][i]!=0 &&
+//                                (nodeValues.get(currentNode)-amat[nodes.indexOf(currentNode)][i])==nodeValues.get(nodes.get(i))) {
+//                            //System.out.println(nodes.get(i).getID() + ", " + currentNode.getID());
+//
+//                            costedPath.getCheapestPath().add(0, nodes.get(i)); //Add the identified path node to the front of the result list
+//                            currentNode=nodes.get(i); //Move the currentNode reference back to the identified path node
+//                            //foundPrevPathNode=true; //Set the flag to break the outer loop
+//                            break;
+//                        }
+//                    }
+//                }
+//                //Reset the node values for all nodes to (effectively) infinity so we can search again (leave no footprint!)
+////                for(T t : encountered) nodeValues.replace(t, Integer.MAX_VALUE);
+////                for(T t : unencountered) nodeValues.replace(t, Integer.MAX_VALUE);
+//                return costedPath; //The costed (cheapest) path has been assembled, so return it!
+//            }
+//
+//            //We're not at the goal node yet, so...
+//            for(int i = 0; i < size; i++) //For each edge/link from the current node...
+//                if(amat[nodes.indexOf(currentNode)][i]!=0 && !encountered.contains(nodes.get(i))) { //If the node it leads to has not yet been encountered (i.e. processed)
+//                    nodeValues.replace(nodes.get(i), Integer.min(nodeValues.get(nodes.get(i)),
+//                            nodeValues.get(currentNode)+amat[nodes.indexOf(currentNode)][i])); //Update the node value at the end
+////of the edge to the minimum of its current value or the total of the current node's value plus the cost of the edge
+//                    if(!unencountered.contains(nodes.get(i))) unencountered.add(nodes.get(i));
+//                }
+//            Collections.sort(unencountered,(n1, n2)->nodeValues.get(n1)-nodeValues.get(n2)); //Sort in ascending node value order
+//        }while(!unencountered.isEmpty());
+//        return null; //No path found, so return null
+//    }
 }
