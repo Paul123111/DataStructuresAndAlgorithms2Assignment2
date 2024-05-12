@@ -7,6 +7,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PixelGraph {
@@ -27,12 +29,14 @@ public class PixelGraph {
         return writableImage;
     }
 
-    public static ArrayList<Integer> breadthFirstSearchWrapper(int origin, int destination,  int[] pixels){
-        ArrayList<Integer> agenda =  new ArrayList<>();
-
-
-
-        return null;
+    public static int[] breadthFirstSearchWrapper(int origin, int destination,  int[] pixels){
+        ArrayList<int[]> agenda =  new ArrayList<>();
+        int[] firstAgendaPath=new int[1],resultPath;
+        firstAgendaPath[0] = origin;
+        agenda.add(firstAgendaPath);
+        resultPath=findPathBreadthFirst(agenda,null,destination,pixels); //Get single BFS path (will be shortest)
+        resultPath = Utilities.reversArray(resultPath);
+        return resultPath;
     }
 
    public static int[] findPathBreadthFirst(ArrayList<int[]> agenda, ArrayList<Integer> encountered, int destination, int[] pixels){
