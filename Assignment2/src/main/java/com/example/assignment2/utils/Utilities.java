@@ -28,7 +28,7 @@ public class Utilities {
         return (int) Math.hypot(Math.abs(x2-x1), Math.abs(y2-y1));
     }
 
-    public static int[] reversArray(int [] input){
+    public static int[] reverseArray(int[] input){
         int[] output = new int[input.length];
         int inIndex = 0;
         for(int i = output.length-1; i != 0;i--){
