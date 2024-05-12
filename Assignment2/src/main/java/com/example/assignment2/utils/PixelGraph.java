@@ -4,16 +4,36 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PixelGraph {
 
+    static int width;
 
-    public static ArrayList<Integer> breadthFirstSearch(int origin, int destination,  int[] pixels){
-        ArrayList<Integer> result = new ArrayList<>();
+    public static ArrayList<Integer> breadthFirstSearchWrapper(int origin, int destination,  int[] pixels){
+        ArrayList<Integer> agenda =  new ArrayList<>();
 
 
-        return result;
+        return null;
     }
+
+   public static int[] findPathBreadthFirst(ArrayList<int[]> agenda, ArrayList<Integer> encountered, int destination, int[] pixels){
+       if(agenda.isEmpty()) return null; //Search failed
+       int[] nextPath=agenda.remove(0); //Get first item (next path to consider) off agenda
+       int currentNode=nextPath[0]; //The first item in the next path is the current node
+       if(currentNode == destination) return nextPath; //If that's the goal, we've found our path (so return it)
+       if(encountered==null) encountered=new ArrayList<>(); //First node considered in search so create new (empty)encountered list
+
+       encountered.add(currentNode); //Record current node as encountered so it isn't revisited again
+       for(int adjNode : getAdjacentPixels(currentNode,pixels,width)) //For each adjacent node
+           if(!encountered.contains(adjNode)) { //If it hasn't already been encountered
+               int[] newPath= new int[nextPath.length+1]; //Create a new path list as a copy of the current/next path
+               System.arraycopy(newPath,0,newPath,1,newPath.length);
+               newPath[0]=adjNode; //And add the adjacent node to the front of the new copy
+               agenda.add(newPath); //Add the new path to the end of agenda (end->BFS!)
+           }
+       return findPathBreadthFirst(agenda,encountered,destination,pixels); //Tail call
+   }
 
    public static int[] getPixels(Image image){
        PixelReader reader = image.getPixelReader();
@@ -84,6 +104,10 @@ public class PixelGraph {
         for (int i = 0; i < pixelArray.length; i++) {
             System.out.print(pixelArray[i] + (((i+1)%width==0) ? "\n" : " "));
         }
+    }
+
+    public static void setWidth(int w){
+        width = w;
     }
 
 }
