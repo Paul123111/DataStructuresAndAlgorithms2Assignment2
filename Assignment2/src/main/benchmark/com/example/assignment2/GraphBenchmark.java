@@ -112,7 +112,7 @@ public class GraphBenchmark {
     @BenchmarkMode(Mode.AverageTime)
     @Warmup(iterations = 1)
     public void findCheapestPathDijkstra(){
-        graph.findCheapestPathDijkstraWrapper("1","7");
+        graph.findCheapestPathDijkstraWrapper("1","7",1);
     }
 }
 

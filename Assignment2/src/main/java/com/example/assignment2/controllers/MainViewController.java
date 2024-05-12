@@ -362,7 +362,8 @@ public class MainViewController {
     @FXML
     protected void breadthFirstSearchPixelByPixel() {
         int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
-        Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisLandmarks.png").toString()), path);
+        System.out.println(path);
+        Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisRedDots.png").toString()), path);
 
         mapView.setImage(image);
     }

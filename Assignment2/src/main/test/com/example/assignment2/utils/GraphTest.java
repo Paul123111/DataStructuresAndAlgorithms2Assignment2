@@ -93,7 +93,7 @@ public class GraphTest {
 
     @Test
     void initialiseNodeValues(){
-        Map<Node, Integer> map = graph.initialiseNodeValues(graph.getNodes().get(1));
+        Map<Node, Double> map = graph.initialiseNodeValues(graph.getNodes().get(1));
         assertEquals(map.get(graph.getNodes().get(0)),Integer.MAX_VALUE);
         assertEquals(map.get(graph.getNodes().get(1)),0);
         assertEquals(map.get(graph.getNodes().get(2)),Integer.MAX_VALUE);
@@ -102,7 +102,7 @@ public class GraphTest {
     @Test
     void findCheapestPathDijkstra(){
         connectGraphUpSetupFunction();
-        CostedPath<Node> path = graph.findCheapestPathDijkstraWrapper("1","7");
+        CostedPath<Node> path = graph.findCheapestPathDijkstraWrapper("1","7",1);
         assertArrayEquals(path.getCheapestPath().toArray(), new Node[] {graph.getNodes().get(0),
                 graph.getNodes().get(2),
                 graph.getNodes().get(4),

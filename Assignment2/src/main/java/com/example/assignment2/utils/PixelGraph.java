@@ -49,7 +49,7 @@ public class PixelGraph {
 
        encountered.add(currentNode); //Record current node as encountered so it isn't revisited again
        for(int adjNode : getAdjacentPixels(currentNode,pixels,width)) //For each adjacent node
-           if(adjNode!=-1 && !encountered.contains(adjNode)) { //If it hasn't already been encountered
+           if(!encountered.contains(adjNode)) { //If it hasn't already been encountered
                int[] newPath= new int[nextPath.length+1]; //Create a new path list as a copy of the current/next path
                System.arraycopy(nextPath,0,newPath,1,nextPath.length);
                newPath[0]=adjNode; //And add the adjacent node to the front of the new copy
@@ -93,18 +93,18 @@ public class PixelGraph {
         for(int i = 0; i<adjacentPixels.length;i++){
             if(adjacentPixels[i]!=-1 && pixels[adjacentPixels[i]] == 0){
                 adjacentPixels[i] = -1;
-                //validPixelCount--;
+                validPixelCount--;
             }
         }
-//        int[] validPixels = new int[validPixelCount];
-//        int index = 0;
-//        for(int i = 0; i<adjacentPixels.length;i++){
-//            if(adjacentPixels[i] != -1){
-//                validPixels[index] = adjacentPixels[i];
-//                index ++;
-//            }
-//        }
-       return adjacentPixels;
+        int[] validPixels = new int[validPixelCount];
+        int index = 0;
+        for(int i = 0; i<validPixels.length;i++){
+            if(adjacentPixels[i] != -1){
+                validPixels[index] = adjacentPixels[i];
+                index ++;
+            }
+        }
+       return validPixels;
    }
 
    static boolean isTouchingLeft(int pixel, int width){
