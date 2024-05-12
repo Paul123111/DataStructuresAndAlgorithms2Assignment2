@@ -7,8 +7,8 @@ import java.util.*;
 public class Graph<T extends SearchByField<R>, R> {
     //add adjacency matrix functions - all nodes will be added from csv file - DONE
 
-    private List<T> nodes = new ArrayList<>();
-    private int[][] amat = new int[0][0];
+    protected List<T> nodes = new ArrayList<>();
+    protected int[][] amat = new int[0][0];
 
     public Graph(List<T> nodes) {
         this.nodes = nodes;
