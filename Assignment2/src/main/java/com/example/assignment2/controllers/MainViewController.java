@@ -370,7 +370,7 @@ public class MainViewController {
 
         clearLines();
 
-        drawRoute(breadthFirstGraph.findPathBreadthFirstWrapper(start.getValue(), destination.getValue()));
+        //drawRoute(breadthFirstGraph.findPathBreadthFirstWrapper(start.getText(), destination.getText()));
     }
 
 
