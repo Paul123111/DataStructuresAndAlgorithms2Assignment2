@@ -16,7 +16,7 @@ public class PixelGraph {
     static int width;
 
     public static WritableImage getWritableImage(Image image) {
-        return new WritableImage((int) image.getWidth(), (int) image.getHeight());
+        return new WritableImage(image.getPixelReader() ,(int) image.getWidth(), (int) image.getHeight());
     }
 
     public static Image changePixels(Image image, int[] pixels) {
@@ -44,7 +44,7 @@ public class PixelGraph {
 
        int[] nextPath=agenda.remove(0); //Get first item (next path to consider) off agenda
        int currentNode=nextPath[0]; //The first item in the next path is the current node
-       if(currentNode == destination) return nextPath; //If that's the goal, we've found our path (so return it)
+       if(currentNode==destination) return nextPath; //If that's the goal, we've found our path (so return it)
        if(encountered==null) encountered=new ArrayList<>(); //First node considered in search so create new (empty)encountered list
 
        encountered.add(currentNode); //Record current node as encountered so it isn't revisited again
@@ -108,17 +108,17 @@ public class PixelGraph {
    }
 
    static boolean isTouchingLeft(int pixel, int width){
-        return pixel%width!=0;
+        return pixel%width==0;
     }
    static boolean isTouchingTop(int pixel, int width){
         return pixel-width<=0;
    }
 
     static boolean isTouchingRight(int pixel, int width){
-        return pixel%width != width-1;
+        return pixel%width==width-1;
     }
     static boolean isTouchingBottom(int pixel, int[] pixels, int width){
-       return pixel+width > pixels.length;
+       return pixel+width >= pixels.length;
     }
 
     public static void asciiImage(int[] pixelArray, int width) {
