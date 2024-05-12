@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
@@ -13,7 +14,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment2.controllers.MainViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment2.controllers.MainViewController">
    <children>
       <HBox prefHeight="604.0" prefWidth="914.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -84,7 +85,7 @@
                                     <Insets left="10.0" />
                                  </FlowPane.margin>
                               </Button>
-                              <Button mnemonicParsing="false" text="Connect All Edges on Map" onAction="#connectAllPoints">
+                              <Button mnemonicParsing="false" onAction="#connectAllPoints" text="Connect All Edges on Map">
                                  <FlowPane.margin>
                                     <Insets left="10.0" />
                                  </FlowPane.margin>
@@ -113,6 +114,11 @@
                                  </FlowPane.margin>
                               </Button>
                               <Button mnemonicParsing="false" onAction="#depthFirstRoutes" text="Show All Routes (Depth-First)">
+                                 <FlowPane.margin>
+                                    <Insets left="10.0" />
+                                 </FlowPane.margin>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#breadthFirstRout" text="Show Rout (Breadth-First)">
                                  <FlowPane.margin>
                                     <Insets left="10.0" />
                                  </FlowPane.margin>

@@ -1,21 +1,19 @@
 package com.example.assignment2.controllers;
 
 import com.example.assignment2.Driver;
-import com.example.assignment2.utils.CostedPath;
-import com.example.assignment2.utils.Graph;
-import com.example.assignment2.utils.Node;
-import com.example.assignment2.utils.Utilities;
+import com.example.assignment2.utils.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,6 +104,7 @@ public class MainViewController {
     private TreeView<Button> routeTreeView;
 
     private Graph<Node, String> graph;
+    private BreadthFirstGraph<Node, String> breadthFirstGraph;
 
     @FXML
     public void initialize() throws FileNotFoundException, URISyntaxException {
@@ -179,6 +178,8 @@ public class MainViewController {
 
         sc.close();
     }
+
+
 
     //TODO maybe split into multiple different functions
     private void editMap() {
@@ -290,6 +291,18 @@ public class MainViewController {
     }
 
     @FXML
+    protected void drawPixel(int x, int y){
+        Rectangle rect = new Rectangle(x,y,1,1);
+        rect.setStroke(Color.BLACK);
+        imagePane.getChildren().add(rect);
+    }
+
+    @FXML
+    protected void drawPixel(int x, int y, Color color){
+
+    }
+
+    @FXML
     private void drawRoute(List<Node> route) {
         for (int i = 1; i < route.size(); i++) {
             drawLine(route.get(i - 1).getImageX(), route.get(i - 1).getImageY(),
@@ -304,6 +317,13 @@ public class MainViewController {
                     route.get(i).getImageX(), route.get(i).getImageY(), color);
         }
     }
+
+    private void drawRoutPixels(List<Node> route){
+        //TODO need to create a subrout first
+
+    }
+
+
 
     @FXML
     protected void depthFirstRoute() {
@@ -328,6 +348,15 @@ public class MainViewController {
 
         addTreeViewRoutes(routes, Utilities.parseInt(numRoutes.getText()));
     }
+    @FXML
+    protected void breadthFirstRout() {
+
+        clearLines();
+
+        drawRoute(breadthFirstGraph.findPathBreadthFirstWrapper(start.getText(), destination.getText()));
+    }
+
+
 
     @FXML
     protected void addTreeViewRoutes(List<List<Node>> routes, int numRoutes) {
