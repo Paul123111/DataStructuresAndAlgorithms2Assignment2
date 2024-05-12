@@ -30,4 +30,10 @@ public class PixelGraph {
        return result;
    }
 
+    public static void asciiImage(int[] pixelArray, int width) {
+        for (int i = 0; i < pixelArray.length; i++) {
+            System.out.print(pixelArray[i] + (((i+1)%width==0) ? "\n" : " "));
+        }
+    }
+
 }
