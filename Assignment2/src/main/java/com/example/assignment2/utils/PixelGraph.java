@@ -2,6 +2,9 @@ package com.example.assignment2.utils;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +13,23 @@ public class PixelGraph {
 
     static int width;
 
+    public static WritableImage getWritableImage(Image image) {
+        return new WritableImage((int) image.getWidth(), (int) image.getHeight());
+    }
+
+    public static Image changePixels(Image image, int[] pixels) {
+        WritableImage writableImage = getWritableImage(image);
+        final int width = (int) writableImage.getWidth();
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        for (int i : pixels) {
+            pixelWriter.setColor(i%width, i/width, new Color(0, 0, 0, 1));
+        }
+        return writableImage;
+    }
+
     public static ArrayList<Integer> breadthFirstSearchWrapper(int origin, int destination,  int[] pixels){
         ArrayList<Integer> agenda =  new ArrayList<>();
+
 
 
         return null;
@@ -19,6 +37,7 @@ public class PixelGraph {
 
    public static int[] findPathBreadthFirst(ArrayList<int[]> agenda, ArrayList<Integer> encountered, int destination, int[] pixels){
        if(agenda.isEmpty()) return null; //Search failed
+
        int[] nextPath=agenda.remove(0); //Get first item (next path to consider) off agenda
        int currentNode=nextPath[0]; //The first item in the next path is the current node
        if(currentNode == destination) return nextPath; //If that's the goal, we've found our path (so return it)
@@ -28,7 +47,7 @@ public class PixelGraph {
        for(int adjNode : getAdjacentPixels(currentNode,pixels,width)) //For each adjacent node
            if(!encountered.contains(adjNode)) { //If it hasn't already been encountered
                int[] newPath= new int[nextPath.length+1]; //Create a new path list as a copy of the current/next path
-               System.arraycopy(newPath,0,newPath,1,newPath.length);
+               System.arraycopy(nextPath,0,newPath,1,newPath.length);
                newPath[0]=adjNode; //And add the adjacent node to the front of the new copy
                agenda.add(newPath); //Add the new path to the end of agenda (end->BFS!)
            }
@@ -96,9 +115,6 @@ public class PixelGraph {
     static boolean isTouchingBottom(int pixel, int[] pixels, int width){
        return pixel+width > pixels.length;
     }
-
-
-
 
     public static void asciiImage(int[] pixelArray, int width) {
         for (int i = 0; i < pixelArray.length; i++) {
