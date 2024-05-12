@@ -305,6 +305,7 @@ public class MainViewController {
             int imageX = (int) x;
             int imageY = (int) y;
 
+            System.out.println(xCord + yCord*600);
             if (mouseEvent.isPrimaryButtonDown()) {
                 pixelStart = xCord + yCord*600;
             } else if (mouseEvent.isSecondaryButtonDown()) {

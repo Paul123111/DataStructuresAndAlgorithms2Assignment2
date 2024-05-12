@@ -80,13 +80,13 @@ public class PixelGraph {
    static int[] getAdjacentPixels(int pixel, int[] pixels, int width){
        int[] adjacentPixels = new int[8];
        adjacentPixels[0]=  isTouchingLeft(pixel,width) ? -1: pixel-1;
-       adjacentPixels[1] = isTouchingTop(pixel,width)&&isTouchingLeft(pixel,width)? -1: pixel-width-1;
+       adjacentPixels[1] = isTouchingTop(pixel,width) || isTouchingLeft(pixel,width)? -1: pixel-width-1;
        adjacentPixels[2] = isTouchingTop(pixel,width)? -1:pixel-width;
-       adjacentPixels[3] = isTouchingTop(pixel,width) && isTouchingRight(pixel, width)? -1:pixel-width+1;
+       adjacentPixels[3] = isTouchingTop(pixel,width) || isTouchingRight(pixel, width)? -1:pixel-width+1;
        adjacentPixels[4] = isTouchingRight(pixel, width)? -1:pixel+1;
-       adjacentPixels[5] = isTouchingRight(pixel,width) && isTouchingBottom(pixel,pixels,width)? -1:pixel+width+1;
+       adjacentPixels[5] = isTouchingRight(pixel,width) || isTouchingBottom(pixel,pixels,width)? -1:pixel+width+1;
        adjacentPixels[6] = isTouchingBottom(pixel,pixels,width)? -1:pixel+width;
-       adjacentPixels[7] = isTouchingBottom(pixel,pixels,width) && isTouchingLeft(pixel,width)? -1:pixel+width-1;
+       adjacentPixels[7] = isTouchingBottom(pixel,pixels,width) || isTouchingLeft(pixel,width)? -1:pixel+width-1;
 
        int validPixelCount = 8;
 
@@ -111,7 +111,7 @@ public class PixelGraph {
         return pixel%width!=0;
     }
    static boolean isTouchingTop(int pixel, int width){
-        return pixel - width<0;
+        return pixel-width<=0;
    }
 
     static boolean isTouchingRight(int pixel, int width){
