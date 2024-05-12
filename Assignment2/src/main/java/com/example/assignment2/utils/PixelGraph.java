@@ -12,7 +12,7 @@ public class PixelGraph {
         return null;
     }
 
-   static int[] getPixels(Image image){
+   public static int[] getPixels(Image image){
        PixelReader reader = image.getPixelReader();
        int width = (int)image.getWidth();
        int size = (int)(width*image.getHeight());
