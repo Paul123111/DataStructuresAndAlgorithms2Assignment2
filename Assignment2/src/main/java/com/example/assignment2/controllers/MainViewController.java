@@ -151,7 +151,7 @@ public class MainViewController {
         mapView.setFitWidth(600);
         mapView.setFitHeight(400);
         mapView.setPreserveRatio(false);
-        Image image = new Image(Driver.class.getResource("images/ParisLandmarks.png").toString());
+        Image image = new Image(Driver.class.getResource("images/ParisPixelByPixel.png").toString());
         mapView.setImage(image);
         pixels = PixelGraph.getPixels(image);
         PixelGraph.setWidth(600);
@@ -306,6 +306,10 @@ public class MainViewController {
             int imageY = (int) y;
 
             System.out.println(xCord + yCord*600);
+            if (mapView.getImage().getPixelReader().getColor(xCord, yCord).equals(new Color(0, 0, 0, 1))) {
+                System.out.println("invalid");
+            }
+
             if (mouseEvent.isPrimaryButtonDown()) {
                 pixelStart = xCord + yCord*600;
             } else if (mouseEvent.isSecondaryButtonDown()) {
@@ -363,6 +367,10 @@ public class MainViewController {
     protected void breadthFirstSearchPixelByPixel() {
         int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
         Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisLandmarks.png").toString()), path);
+
+        for (int i : path) {
+            System.out.println(i);
+        }
 
         mapView.setImage(image);
     }
