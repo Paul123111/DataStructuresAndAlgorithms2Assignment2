@@ -15,6 +15,7 @@ public class PixelGraph {
 
     public static Image changePixels(Image image, ArrayList<Integer> pixels) {
         WritableImage writableImage = getWritableImage(image);
+        final int width = Utilities.doubleToInt(writableImage.getWidth());
         //final int width = (int) writableImage.getWidth();
         PixelWriter pixelWriter = writableImage.getPixelWriter();
         for (int i : pixels) {
@@ -108,7 +109,7 @@ public class PixelGraph {
         return findPathBreadthFirstImage(imageView, writableImage, agenda, encountered, destination, pixels); //Tail call
     }
 
-    public static ArrayList<Integer> findPathBreadthFirst2(ArrayList<Integer> agenda, ArrayList<Integer> encountered, int destination, int[] pixels){
+    public static ArrayList<Integer> findPathBreadthFirst2(ArrayList<Integer> agenda, ArrayList<Integer> encountered, int destination, int[] pixels, int width){
         if(agenda.isEmpty()) return null; //Search failed
 
         //int nextPath=agenda.remove(0); //Get first item (next path to consider) off agenda
@@ -137,23 +138,23 @@ public class PixelGraph {
 //                agenda.add(newPath); //Add the new path to the end of agenda (end->BFS!)
 
                 pixels[adjIndex] = Integer.min(pixels[adjIndex], pixels[currentNode]+1);
-                if (!agenda.contains(adjIndex))
                     agenda.add(adjIndex);
 
                 //System.out.println(adjIndex);
 
             }
         }
-        return findPathBreadthFirst2(agenda, encountered, destination, pixels); //Tail call
+        return findPathBreadthFirst2(agenda, encountered, destination, pixels, width); //Tail call
     }
 
-    public static ArrayList<Integer> breadthFirstSearchWrapper2(int origin, int destination, int[] pixels){
+    public static ArrayList<Integer> breadthFirstSearchWrapper2(int origin, int destination, int[] pixels, int width){
         int[] pixelTempArray = pixels.clone();
+
         ArrayList<Integer> agenda = new ArrayList<>();
         System.out.println(pixelTempArray[origin]);
         pixelTempArray[origin] = 0;
         agenda.add(origin);
-        return findPathBreadthFirst2(agenda,null,destination,pixelTempArray); //Get single BFS path (will be shortest)
+        return findPathBreadthFirst2(agenda,null,destination,pixelTempArray, width); //Get single BFS path (will be shortest)
         //resultPath = Arrays.sort(resultPath, ((int a, b) -> ((int) a - (int) b)));
     }
 
@@ -167,7 +168,7 @@ public class PixelGraph {
            int y = i/width;
            //int color = reader.getArgb(x,y);
            Color color = reader.getColor(x,y);
-           if(color.equals(new Color(1,0,0,1))) {
+           if(color.equals(new Color(0,0,0,1))) {
                result[i] = -1;
            }else {
                result[i] = Integer.MAX_VALUE;
@@ -181,7 +182,7 @@ public class PixelGraph {
    //Index 0 starts left and goes clockwise around the pixel
    static int[] getAdjacentPixels(int pixel, int[] pixels, int width) {
        int[] adjacentPixels = new int[8];
-       adjacentPixels[0] =  isTouchingLeft(pixel,width) ? -1: pixel-1;
+       adjacentPixels[0] = isTouchingLeft(pixel,width) ? -1: pixel-1;
        adjacentPixels[1] = isTouchingTop(pixel,width) || isTouchingLeft(pixel,width)? -1: pixel-width-1;
        adjacentPixels[2] = isTouchingTop(pixel,width)? -1:pixel-width;
        adjacentPixels[3] = isTouchingTop(pixel,width) || isTouchingRight(pixel, width)? -1:pixel-width+1;
@@ -195,6 +196,7 @@ public class PixelGraph {
                 adjacentPixels[i] = -1;
             }
         }
+
 //        int[] validPixels = new int[validPixelCount];
 //        int index = 0;
 //        for(int i = 0; i<validPixels.length;i++){
@@ -214,7 +216,6 @@ public class PixelGraph {
    static boolean isTouchingTop(int pixel, int width){
         return pixel-width<0;
    }
-
     static boolean isTouchingRight(int pixel, int width){
         return pixel%width==width-1;
     }
@@ -232,6 +233,27 @@ public class PixelGraph {
 
     public static void setWidth(int w){
         width = w;
+    }
+
+    public static WritableImage drawImageFromArray(Image image, int[] pixelArray) {
+        WritableImage newImage = getWritableImage(image);
+        final int width = Utilities.doubleToInt(newImage.getWidth());
+        final int height = Utilities.doubleToInt(newImage.getHeight());
+
+        PixelReader pixelReader = newImage.getPixelReader();
+        PixelWriter pixelWriter = newImage.getPixelWriter();
+
+        //asciiImage(pixelArray, width);
+
+        for (int i = 0; i < width*height; i++) {
+            if (i < pixelArray.length && pixelArray[i] != -1) {
+                pixelWriter.setColor(i%width, (int) i/width, new Color(1, 1, 1, 1));
+            } else {
+                pixelWriter.setColor(i%width, (int) i/width, new Color(0, 0, 0, 1));
+            }
+        }
+
+        return newImage;
     }
 
 }

@@ -43,20 +43,20 @@ public class Utilities {
     }
 
 
-    public static Image rescaledImage(Image input, double scale){
-        int width= (int)(input.getWidth()*scale);
-        int height = (int)(input.getHeight()*scale);
-        WritableImage writableImage = new WritableImage(width,height);
-        PixelReader reader = input.getPixelReader();
-        PixelWriter writer = writableImage.getPixelWriter();
-        for(int x = 0;x<width;x++){
-            for(int y = 0;y<height;y++){
-                writer.setColor(x,y,reader.getColor((int)(x/scale),(int)(y/scale)));
-            }
-        }
-
-        return writableImage;
-    }
+//    public static Image rescaledImage(Image input, double scale){
+//        int width= (int)(input.getWidth()*scale);
+//        int height = (int)(input.getHeight()*scale);
+//        WritableImage writableImage = new WritableImage(width,height);
+//        PixelReader reader = input.getPixelReader();
+//        PixelWriter writer = writableImage.getPixelWriter();
+//        for(int x = 0;x<width;x++){
+//            for(int y = 0;y<height;y++){
+//                writer.setColor(x,y,reader.getColor((int)(x/scale),(int)(y/scale)));
+//            }
+//        }
+//
+//        return writableImage;
+//    }
 
 }
 

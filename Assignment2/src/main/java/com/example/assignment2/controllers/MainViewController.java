@@ -151,12 +151,14 @@ public class MainViewController {
         mapView.setFitWidth(600);
         mapView.setFitHeight(400);
         mapView.setPreserveRatio(false);
-        Image image = Utilities.rescaledImage(new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString()),0.5);
+        Image image = (new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString()));
         mapView.setImage(image);
         pixels = PixelGraph.getPixels(mapView.getImage());
         System.out.println(mapView.getImage().getWidth());
         //PixelGraph.asciiImage(pixels, 600);
         PixelGraph.setWidth((int) mapView.getImage().getWidth());
+
+        mapView.setImage(PixelGraph.drawImageFromArray(image, pixels));
     }
 
     //reads in csv file, then adds nodes to arraylist (add to graph) - DONE
@@ -374,7 +376,7 @@ public class MainViewController {
     protected void breadthFirstSearchPixelByPixel() {
         //int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
         //ArrayList<Integer> path = PixelGraph.breadthFirstSearchImageWrapper(mapView, mapView.getImage(), pixelStart, pixelDestination, pixels);
-        ArrayList<Integer> path = PixelGraph.breadthFirstSearchWrapper2(pixelStart, pixelDestination, pixels);
+        ArrayList<Integer> path = PixelGraph.breadthFirstSearchWrapper2(pixelStart, pixelDestination, pixels, Utilities.doubleToInt(mapView.getImage().getWidth()));
         Image image = PixelGraph.changePixels(mapView.getImage(), path);
 
         for (int i : path) {
