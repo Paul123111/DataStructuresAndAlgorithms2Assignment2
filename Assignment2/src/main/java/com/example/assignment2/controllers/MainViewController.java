@@ -153,9 +153,10 @@ public class MainViewController {
         mapView.setPreserveRatio(false);
         Image image = Utilities.rescaledImage(new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString()),0.5);
         mapView.setImage(image);
-        pixels = PixelGraph.getPixels(image);
+        pixels = PixelGraph.getPixels(mapView.getImage());
+        System.out.println(mapView.getImage().getWidth());
         //PixelGraph.asciiImage(pixels, 600);
-        PixelGraph.setWidth(600);
+        PixelGraph.setWidth((int) mapView.getImage().getWidth());
     }
 
     //reads in csv file, then adds nodes to arraylist (add to graph) - DONE
@@ -307,8 +308,13 @@ public class MainViewController {
             int imageY = (int) y;
 
             System.out.println(xCord + yCord*600);
+//            WritableImage writableImage = PixelGraph.getWritableImage(mapView.getImage());
+//            writableImage.getPixelWriter().setColor((int) xCord, (int) yCord, new Color(1, 0, 1, 1));
+//            mapView.setImage(writableImage);
+
             if (mapView.getImage().getPixelReader().getColor(xCord, yCord).equals(new Color(0, 0, 0, 1))) {
                 System.out.println("invalid");
+                return;
             }
 
             if (mouseEvent.isPrimaryButtonDown()) {
@@ -367,14 +373,15 @@ public class MainViewController {
     @FXML
     protected void breadthFirstSearchPixelByPixel() {
         //int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
-        ArrayList<Integer> path = PixelGraph.breadthFirstSearchImageWrapper(mapView, mapView.getImage(), pixelStart, pixelDestination, pixels);
-        //Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString()), path);
+        //ArrayList<Integer> path = PixelGraph.breadthFirstSearchImageWrapper(mapView, mapView.getImage(), pixelStart, pixelDestination, pixels);
+        ArrayList<Integer> path = PixelGraph.breadthFirstSearchWrapper2(pixelStart, pixelDestination, pixels);
+        Image image = PixelGraph.changePixels(mapView.getImage(), path);
 
         for (int i : path) {
             System.out.println(i);
         }
 
-        //mapView.setImage(image);
+        mapView.setImage(image);
     }
 
     @FXML
