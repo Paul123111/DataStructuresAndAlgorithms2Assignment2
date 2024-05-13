@@ -35,7 +35,6 @@ public class PixelGraph {
         //resultPath = Arrays.sort(resultPath, ((int a, b) -> ((int) a - (int) b)));
         return resultPath;
     }
-
    public static int[] findPathBreadthFirst(ArrayList<int[]> agenda, ArrayList<Integer> encountered, int destination, int[] pixels){
        if(agenda.isEmpty()) return null; //Search failed
 
@@ -43,7 +42,6 @@ public class PixelGraph {
        int currentNode=nextPath[0]; //The first item in the next path is the current node
        if(currentNode==destination) return nextPath; //If that's the goal, we've found our path (so return it)
        if(encountered==null) encountered=new ArrayList<>(); //First node considered in search so create new (empty)encountered list
-
        encountered.add(currentNode); //Record current node as encountered so it isn't revisited again
        for(int adjNode : getAdjacentPixels(currentNode,pixels,width)) //For each adjacent node
            if(adjNode!=-1 && !encountered.contains(adjNode)) { //If it hasn't already been encountered
@@ -52,6 +50,7 @@ public class PixelGraph {
                newPath[0]=adjNode; //And add the adjacent node to the front of the new copy
                agenda.add(newPath); //Add the new path to the end of agenda (end->BFS!)
            }
+
        return findPathBreadthFirst(agenda,encountered,destination,pixels); //Tail call
    }
 

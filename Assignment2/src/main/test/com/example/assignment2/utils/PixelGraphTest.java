@@ -29,9 +29,7 @@ class PixelGraphTest {
     void breadthFirstSearch() {
         PixelGraph.setWidth(5);
         int[] a = PixelGraph.breadthFirstSearchWrapper(19,4,graph);
-        for (int i : a) {
-            System.out.println(i);
-        }
+        assertArrayEquals(a, new int[]{4,3,7,11,17,18,19});
     }
 
     @org.junit.jupiter.api.Test

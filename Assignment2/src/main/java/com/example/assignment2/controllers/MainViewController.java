@@ -101,11 +101,17 @@ public class MainViewController {
     @FXML
     private ChoiceBox<String> destination;
     @FXML
+    private ChoiceBox<String> waypointLocations;
+    @FXML
     private TextField numRoutes;
     @FXML
     private TreeView<Button> routeTreeView;
     @FXML
     private Slider cultureSlider;
+    @FXML
+    private Label numberOfWaypoints;
+    @FXML
+    private ListView<String> waypointsList;
 
     private Graph<Node, String> graph;
     private BreadthFirstGraph<Node, String> breadthFirstGraph;
@@ -113,6 +119,8 @@ public class MainViewController {
     private int[] pixels;
     private int pixelStart = 0;
     private int pixelDestination = 0;
+    private ArrayList<String> waypoints;
+    private ArrayList<String> avoidWaypoints;
 
     @FXML
     public void initialize() throws FileNotFoundException, URISyntaxException {
@@ -126,7 +134,8 @@ public class MainViewController {
         validateTextFields();
 
         setPixelPoints();
-
+        waypoints = new ArrayList<>();
+        avoidWaypoints = new ArrayList<>();
         //connectAllPoints();
     }
 
@@ -151,7 +160,7 @@ public class MainViewController {
         mapView.setFitWidth(600);
         mapView.setFitHeight(400);
         mapView.setPreserveRatio(false);
-        Image image = new Image(Driver.class.getResource("images/ParisPixelByPixel.png").toString());
+        Image image = new Image(Driver.class.getResource("images/ParisLandmarks.png").toString());
         mapView.setImage(image);
         pixels = PixelGraph.getPixels(image);
         PixelGraph.setWidth(600);
@@ -201,9 +210,9 @@ public class MainViewController {
             totalCulture += node.getCulture();
             start.getItems().add(node.getName());
             destination.getItems().add(node.getName());
+            waypointLocations.getItems().add(node.getName());
         }
     }
-
 
 
     //TODO maybe split into multiple different functions
@@ -264,7 +273,7 @@ public class MainViewController {
                 if (type.getValue().equals("Landmark")) {
                     System.out.println(type.getValue() + "," + name.getText() + "," + year.getText() + "," + xCord + "," + yCord + "," + image.getText()
                             + "," + imageX + "," + imageY + ",");
-                } else if (type.getValue().equals("Junction")){
+                } else if (type.getValue().equals("Junction")) {
                     System.out.println(type.getValue() + "," + name.getText() + "," + xCord + "," + yCord + "," + image.getText()
                             + "," + imageX + "," + imageY + ",");
                 }
@@ -274,7 +283,7 @@ public class MainViewController {
 
                 landmarkImage.setFitWidth(6);
                 landmarkImage.setFitHeight(6);
-                landmarkImage.relocate(imageX-3, imageY-3);
+                landmarkImage.relocate(imageX - 3, imageY - 3);
 
                 imagePane.getChildren().add(landmarkImage);
 
@@ -305,15 +314,15 @@ public class MainViewController {
             int imageX = (int) x;
             int imageY = (int) y;
 
-            System.out.println(xCord + yCord*600);
+            System.out.println(xCord + yCord * 600);
             if (mapView.getImage().getPixelReader().getColor(xCord, yCord).equals(new Color(0, 0, 0, 1))) {
                 System.out.println("invalid");
             }
 
             if (mouseEvent.isPrimaryButtonDown()) {
-                pixelStart = xCord + yCord*600;
+                pixelStart = xCord + yCord * 600;
             } else if (mouseEvent.isSecondaryButtonDown()) {
-                pixelDestination = xCord + yCord*600;
+                pixelDestination = xCord + yCord * 600;
             }
         });
     }
@@ -324,8 +333,8 @@ public class MainViewController {
         int[][] mat = graph.getAMat();
 
         for (int i = 0; i < nodes.size(); i++) {
-            for (int j = i+1; j < nodes.size(); j++) {
-                if (mat[i][j]!=0)
+            for (int j = i + 1; j < nodes.size(); j++) {
+                if (mat[i][j] != 0)
                     drawLine(nodes.get(i).getImageX(), nodes.get(i).getImageY(),
                             nodes.get(j).getImageX(), nodes.get(j).getImageY());
             }
@@ -352,14 +361,14 @@ public class MainViewController {
     }
 
     @FXML
-    protected void drawPixel(int x, int y){
-        Rectangle rect = new Rectangle(x,y,1,1);
+    protected void drawPixel(int x, int y) {
+        Rectangle rect = new Rectangle(x, y, 1, 1);
         rect.setStroke(Color.BLACK);
         imagePane.getChildren().add(rect);
     }
 
     @FXML
-    protected void drawPixel(int x, int y, Color color){
+    protected void drawPixel(int x, int y, Color color) {
 
     }
 
@@ -391,17 +400,44 @@ public class MainViewController {
         }
     }
 
-    private void drawRoutPixels(List<Node> route){
+    private void drawRoutPixels(List<Node> route) {
         //TODO need to create a subrout first
 
     }
 
 
+    boolean hasWaypoints(List<Node> rout) {
+        for (String waypoint : waypoints) {
+            boolean found = false;
+            for (Node node : rout) {
+                if (node.matchesID(waypoint)) found = true;
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    boolean hasAvoidWaypoints(List<Node> rout) {
+        for (String waypoint : avoidWaypoints) {
+            for (Node node : rout) {
+                if (node.matchesID(waypoint)) return true;
+            }
+        }
+        return false;
+    }
 
     @FXML
     protected void depthFirstRoute() {
         clearLines();
-        drawRoute(graph.findPathDepthFirstWrapper(start.getValue(), destination.getValue()));
+        List<List<Node>> routs = graph.findAllPathsDepthFirstWrapper(start.getValue(), destination.getValue());
+        for (List<Node> rout : routs) {
+            if (hasWaypoints(rout)) {
+                drawRoute(rout);
+                break;
+            }
+        }
     }
 
     @FXML
@@ -418,9 +454,22 @@ public class MainViewController {
 //            drawRoute(routes.get(i), Color.hsb(hue, 1, 1));
 //            hue += (360/5);
 //        }
-
+        for (int i = routes.size() - 1; i != -1; i--) {
+            if (!waypoints.isEmpty() && !hasWaypoints(routes.get(i))) {
+                routes.remove(routes.get(i));
+                continue;
+            }
+            if (!avoidWaypoints.isEmpty() && hasAvoidWaypoints(routes.get(i))) {
+                routes.remove(routes.get(i));
+            }
+        }
         addTreeViewRoutes(routes, Utilities.parseInt(numRoutes.getText()));
+        if (routes.isEmpty())
+            numberOfWaypoints.setText("No routs found with this combination of way points");
+        else
+            numberOfWaypoints.setText("");
     }
+
     @FXML
     protected void breadthFirstRout() {
 
@@ -428,7 +477,6 @@ public class MainViewController {
 
         //drawRoute(breadthFirstGraph.findPathBreadthFirstWrapper(start.getText(), destination.getText()));
     }
-
 
 
     @FXML
@@ -443,12 +491,12 @@ public class MainViewController {
         for (int i = 0; i < numRoutes; i++) {
             if (i >= size) break;
 
-            Button button = new Button("Show Route #" + (i+1));
+            Button button = new Button("Show Route #" + (i + 1));
             //make final fields to use for lambda expression
             final double lambdaHue = hue;
             final int lambdaI = i;
 
-            if (hue%360==144) brightness = 0.75;
+            if (hue % 360 == 144) brightness = 0.75;
             else brightness = 1;
             final double lambdaBrightness = brightness;
 
@@ -458,19 +506,84 @@ public class MainViewController {
             });
 
             root.getChildren().add(new TreeItem<>(button));
-            hue += (360/5);
+            hue += (360 / 5);
         }
-
-
     }
+
 
     @FXML
     protected void shortestPath() {
+        //Disconnect the nodes temporarily
+        int[][] toReconnect = new int[graph.getAMat().length][graph.getAMat().length];
+        for (String waypoint : avoidWaypoints) {
+            for (int i = 0; i < toReconnect.length; i++) {
+                int waypointIndex = graph.findIndexByField(waypoint);
+                if (AdjacencyMatrix.isConnected(graph.getAMat(), waypointIndex, i)) {
+                    toReconnect[waypointIndex][i] = graph.getAMat()[waypointIndex][i];
+                    AdjacencyMatrix.connectNodesUndirected(graph.getAMat(), waypointIndex, i, 0);
+                }
+            }
+        }
+
+
         CostedPath<Node> costedPath = graph.findCheapestPathDijkstraWrapper(start.getValue(), destination.getValue(), cultureSlider.getValue());
         System.out.println(costedPath.getCost());
         System.out.println(costedPath.getCulture());
+        insertWayPoints(costedPath);
         clearLines();
         drawRoute(costedPath.getCheapestPath());
+
+        //Reconnect them afterward
+        for (String waypoint : avoidWaypoints) {
+            for (int i = 0; i < toReconnect.length; i++) {
+                int waypointIndex = graph.findIndexByField(waypoint);
+                AdjacencyMatrix.connectNodesUndirected(graph.getAMat(), waypointIndex, i, toReconnect[waypointIndex][i]);
+            }
+        }
+    }
+    private void insertWayPoints(CostedPath<Node> costedPath){
+        List<Node> path = costedPath.getCheapestPath();
+        for (String waypoint: waypoints){
+            ArrayList<CostedPath<Node>> paths = new ArrayList<>();
+            for(Node node: path){
+                paths.add(graph.findCheapestPathDijkstraWrapper(node.getName(), waypoint, cultureSlider.getValue()));
+            }
+            int lowsetCost = 0;
+            for (int i = 0;i<paths.size();i++){
+               if(paths.get(i).getCost()<paths.get(lowsetCost).getCost()){
+                   lowsetCost = i;
+               }
+            }
+
+            path.addAll(lowsetCost, paths.get(lowsetCost).getCheapestPath());
+
+        }
+    }
+
+
+
+    boolean waypointExists(){
+        return waypoints.contains(waypointLocations.getValue()) || avoidWaypoints.contains(waypointLocations.getValue());
+    }
+    @FXML
+    protected void setWaypoint(){
+        if(waypointExists()){return;}
+        waypoints.add(waypointLocations.getValue());
+        waypointsList.getItems().add(waypointLocations.getValue() + " (go trough)");
+    }
+    @FXML
+    protected void setAvoidWaypoint(){
+        if(waypointExists()){return;}
+        avoidWaypoints.add(waypointLocations.getValue());
+        waypointsList.getItems().add(waypointLocations.getValue() + " (avoid)");
+    }
+
+    @FXML
+    protected void clearWaypoints(){
+        waypoints.clear();
+        avoidWaypoints.clear();
+        waypointsList.getItems().clear();
+
     }
 
 //    @FXML

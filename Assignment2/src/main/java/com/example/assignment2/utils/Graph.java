@@ -38,6 +38,7 @@ public class Graph<T extends SearchByField<R>, R> {
         AdjacencyMatrix.connectNodesUndirected(amat, findIndexByField(id1), findIndexByField(id2), value);
     }
 
+
     public String displayPossibleLinks(R id) {
         //returns list of every possible edge for one link
         T node1 = nodes.get(findIndexByField(id));
@@ -368,4 +369,5 @@ public class Graph<T extends SearchByField<R>, R> {
 //        }while(!unencountered.isEmpty());
 //        return null; //No path found, so return null
 //    }
+
 }
