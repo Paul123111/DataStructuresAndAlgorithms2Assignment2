@@ -54,30 +54,30 @@ public class MainViewController {
     //implement dijkstra's algorithm to find the shortest route - DONE (may need further testing to make sure always finds
     // the shortest route)
 
-    //TODO implement dijkstra's route by culture before slider
+    //implement dijkstra's route by culture before slider - DONE
 
-    //TODO for dijkstra's cultural/historic route, make it a slider where the user can choose between
+    //for dijkstra's cultural/historic route, make it a slider where the user can choose between
     // prioritising distance or culture, eg slider to distance makes it choose shortest path,
     // slider to cultural makes it visit every tourist attraction, in between makes it choose a
-    // slight detour from shortest path for extra culture
+    // slight detour from shortest path for extra culture - DONE
 
-    //TODO maybe weight culture and distance depending on slider
+    //maybe weight culture and distance depending on slider - DONE
 
-    //TODO cultural/historic can use only one factor (aka don't need others, can add if I want to), such as
-    // the year an attraction was made
+    //cultural/historic can use only one factor (aka don't need others, can add if I want to), such as
+    // the year an attraction was made - DONE
 
     //TODO implement waypoints - a route must go through selected waypoints
     //TODO implement points to avoid - a route must not go through selected points
 
     //TODO implement breadth-first pixel-by-pixel search, doesn't need to have waypoints/points to avoid etc.
 
-    //TODO tests - probably don't need that many - will probably be writing these as I work on other areas of the assignment
-    //TODO benchmark tests - only need 3 or 4 - 2% for setting it up, 2% for making it do something, 1% for doing something useful
+    //tests - probably don't need that many - will probably be writing these as I work on other areas of the assignment - DONE
+    //benchmark tests - only need 3 or 4 - 2% for setting it up, 2% for making it do something, 1% for doing something useful - DONE
 
     //TODO work on GUI, probably need to use multiple different javaFX components
     //TODO style treeView
 
-    //TODO be able to click on points to select them
+    //be able to click on points to select them - DONE
 
     //double demo is possible if done within week 13
     //due 17th may - will be done WAY earlier
@@ -151,9 +151,10 @@ public class MainViewController {
         mapView.setFitWidth(600);
         mapView.setFitHeight(400);
         mapView.setPreserveRatio(false);
-        Image image = new Image(Driver.class.getResource("images/ParisPixelByPixel.png").toString());
+        Image image = new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString());
         mapView.setImage(image);
         pixels = PixelGraph.getPixels(image);
+        //PixelGraph.asciiImage(pixels, 600);
         PixelGraph.setWidth(600);
     }
 
@@ -365,14 +366,15 @@ public class MainViewController {
 
     @FXML
     protected void breadthFirstSearchPixelByPixel() {
-        int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
-        Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisLandmarks.png").toString()), path);
+        //int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
+        ArrayList<Integer> path = PixelGraph.breadthFirstSearchImageWrapper(mapView, mapView.getImage(), pixelStart, pixelDestination, pixels);
+        //Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString()), path);
 
         for (int i : path) {
             System.out.println(i);
         }
 
-        mapView.setImage(image);
+        //mapView.setImage(image);
     }
 
     @FXML

@@ -13,10 +13,10 @@ class PixelGraphTest {
     @BeforeEach
     void setup(){
         graph = new int[]{
-                1,1,1,1,1,
-                0,1,1,0,0,
-                0,1,0,0,0,
-                0,0,1,1,1
+                 0, 0, 0, 0, 0,
+                -1, 0, 1,-1,-1,
+                -1, 0,-1,-1,-1,
+                -1,-1, 0, 0, 0
         };
     }
 
@@ -26,7 +26,7 @@ class PixelGraphTest {
     }
 
     @org.junit.jupiter.api.Test
-    void breadthFirstSearch() {
+    void breadthFirstSearch2() {
         PixelGraph.setWidth(5);
         int[] a = PixelGraph.breadthFirstSearchWrapper(19,4,graph);
         for (int i : a) {
