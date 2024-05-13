@@ -73,7 +73,7 @@ public class GraphTest {
     @Test
     void findAllPathsDepthFirst(){
         connectGraphUpSetupFunction();
-        List<List<Node>> paths = graph.findAllPathsDepthFirstWrapper("1","7");
+        List<List<Node>> paths = graph.findAllPathsDepthFirstWrapper("1","7", 100);
         assertEquals(paths.size(), 2);
         assertArrayEquals(paths.get(0).toArray(),
                 new Node[] {graph.getNodes().get(0),
@@ -94,15 +94,15 @@ public class GraphTest {
     @Test
     void initialiseNodeValues(){
         Map<Node, Double> map = graph.initialiseNodeValues(graph.getNodes().get(1));
-        assertEquals(map.get(graph.getNodes().get(0)),Integer.MAX_VALUE);
+        assertEquals(map.get(graph.getNodes().get(0)),Double.MAX_VALUE);
         assertEquals(map.get(graph.getNodes().get(1)),0);
-        assertEquals(map.get(graph.getNodes().get(2)),Integer.MAX_VALUE);
+        assertEquals(map.get(graph.getNodes().get(2)),Double.MAX_VALUE);
     }
 
     @Test
     void findCheapestPathDijkstra(){
         connectGraphUpSetupFunction();
-        CostedPath<Node> path = graph.findCheapestPathDijkstraWrapper("1","7",1);
+        CostedPath<Node> path = graph.findCheapestPathDijkstraWrapper("1","7",new ArrayList<>(), 1);
         assertArrayEquals(path.getCheapestPath().toArray(), new Node[] {graph.getNodes().get(0),
                 graph.getNodes().get(2),
                 graph.getNodes().get(4),

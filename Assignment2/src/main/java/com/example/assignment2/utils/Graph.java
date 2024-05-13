@@ -105,7 +105,7 @@ public class Graph<T extends SearchByField<R>, R> {
     }
 
     //Recursive depth-first search of graph (all paths identified returned)
-    public List<List<T>> findAllPathsDepthFirst(T from, List<T> encountered, T lookingfor){
+    public List<List<T>> findAllPathsDepthFirst(T from, List<T> encountered, T lookingfor, int max){
         List<List<T>> result=null, temp2;
         if(from.equals(lookingfor)) { //Found it
             List<T> temp=new ArrayList<>(); //Create new single solution path list
@@ -120,7 +120,7 @@ public class Graph<T extends SearchByField<R>, R> {
 
         for(int i = 0; i < nodes.size(); i++) {
             if (amat[nodes.indexOf(from)][i] != 0 && !encountered.contains(nodes.get(i))) {
-                temp2 = findAllPathsDepthFirst(nodes.get(i), new ArrayList<>(encountered), lookingfor); //Use clone of encountered list for recursive call!
+                temp2 = findAllPathsDepthFirst(nodes.get(i), new ArrayList<>(encountered), lookingfor, max); //Use clone of encountered list for recursive call!
 
                 if (temp2 != null) { //Result of the recursive call contains one or more paths to the solution node
                     for (List<T> x : temp2) //For each partial path list returned
@@ -134,9 +134,9 @@ public class Graph<T extends SearchByField<R>, R> {
         return result;
     }
 
-    public List<List<T>> findAllPathsDepthFirstWrapper(R from, R lookingfor){
+    public List<List<T>> findAllPathsDepthFirstWrapper(R from, R lookingfor, int max){
         return findAllPathsDepthFirst(nodes.get(findIndexByField(from)), null,
-                nodes.get(findIndexByField(lookingfor)));
+                nodes.get(findIndexByField(lookingfor)), max);
     }
 
     public Map<T, Double> initialiseNodeValues(T startNode) {
@@ -159,9 +159,12 @@ public class Graph<T extends SearchByField<R>, R> {
 //    }
 
     //TODO clean up code
-    public CostedPath<T> findCheapestPathDijkstra(T startNode, T lookingfor, int[][] mat){
+    public CostedPath<T> findCheapestPathDijkstra(T startNode, T lookingfor, int[][] mat, List<T> encountered){
         Map<T, Double> nodeValues = initialiseNodeValues(startNode);
-        List<T> encountered=new ArrayList<>(), unencountered=new ArrayList<>();
+        List<T> unencountered=new ArrayList<>();
+        if (encountered==null) {
+            encountered=new ArrayList<>();
+        }
         CostedPath<T> costedPath = new CostedPath();
         int size = nodes.size();
         int preferredDistance = 1000;
@@ -211,8 +214,8 @@ public class Graph<T extends SearchByField<R>, R> {
                     nodeValues.replace(nodes.get(i), Double.min(nodeValues.get(nodes.get(i)),
                             (nodeValues.get(currentNode) + mat[nodes.indexOf(currentNode)][i])));
 
-                    System.out.println(nodeValues.get(currentNode) + ", " + currentNode.getID());
-                    System.out.println(nodeValues.get(nodes.get(i)) + ", " + nodes.get(i).getID());
+//                    System.out.println(nodeValues.get(currentNode) + ", " + currentNode.getID());
+//                    System.out.println(nodeValues.get(nodes.get(i)) + ", " + nodes.get(i).getID());
 
                     //Update the node value at the end
 //of the edge to the minimum of its current value or the total of the current node's value plus the cost of the edge
@@ -224,8 +227,50 @@ public class Graph<T extends SearchByField<R>, R> {
         return null; //No path found, so return null
     }
 
-    public CostedPath<T> findCheapestPathDijkstraWrapper(R startNode, R lookingfor, double cultureWeight) {
-        return findCheapestPathDijkstra(nodes.get(findIndexByField(startNode)), nodes.get(findIndexByField(lookingfor)), setCultureMatrix(cultureWeight));
+    public CostedPath<T> findCheapestPathDijkstraWrapper(R startNode, R lookingfor, ArrayList<T> waypoints, double cultureWeight) {
+        return findCheapestPathDijkstraWaypoints(nodes.get(findIndexByField(startNode)), nodes.get(findIndexByField(lookingfor)), waypoints, setCultureMatrix(cultureWeight));
+    }
+
+    public CostedPath<T> findCheapestPathDijkstraWaypoints(T startNode, T lookingfor, ArrayList<T> waypoints, int[][] mat) {
+        waypoints.sort((a, b) -> (Utilities.getDistance(startNode.getX(), startNode.getY(), a.getX(), a.getY())-(Utilities.getDistance(startNode.getX(), startNode.getY(), b.getX(), b.getY()))));
+        ArrayList<T> encountered = new ArrayList<>();
+
+        encountered.add(lookingfor);
+        T startNode2 = startNode;
+        ArrayList<CostedPath<T>> costedPaths = new ArrayList<>();
+
+        while (!waypoints.isEmpty()) {
+            T t = waypoints.remove(0);
+            costedPaths.add(findCheapestPathDijkstra(startNode2, t, mat, encountered));
+            startNode2 = t;
+            encountered.remove(startNode2);
+        }
+
+        encountered.remove(lookingfor);
+        costedPaths.add(findCheapestPathDijkstra(startNode2, lookingfor, mat, encountered));
+
+        ArrayList<T> combined = new ArrayList<>();
+        int totalCost = 0;
+        int totalCulture = 0;
+        CostedPath<T> resultPath = new CostedPath<>();
+        boolean invalid = false;
+
+        for (CostedPath<T> costedPath : costedPaths) {
+            if (costedPath!=null) {
+                combined.addAll(costedPath.getCheapestPath());
+                totalCost += costedPath.getCost();
+                totalCulture += costedPath.getCulture();
+                invalid = true;
+            }
+        }
+
+        resultPath.setCheapestPath(combined);
+        resultPath.setCost(totalCost);
+        resultPath.setCulture(totalCulture);
+
+        System.out.println(resultPath.getCheapestPath());
+
+        return resultPath;
     }
 
     //TODO chooses the shortest path that meets culture threshold - finds shortest route with cultureValue over threshold
@@ -311,7 +356,7 @@ public class Graph<T extends SearchByField<R>, R> {
                 }
             }
         }
-        System.out.println(AdjacencyMatrix.toString(cultureMat, cultureMat.length));
+        //System.out.println(AdjacencyMatrix.toString(cultureMat, cultureMat.length));
         return cultureMat;
     }
 

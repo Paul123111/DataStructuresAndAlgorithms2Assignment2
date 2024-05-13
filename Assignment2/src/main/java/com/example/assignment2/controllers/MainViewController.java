@@ -112,6 +112,8 @@ public class MainViewController {
     private Label numberOfWaypoints;
     @FXML
     private ListView<String> waypointsList;
+    @FXML
+    private TextField maxRoutes;
 
     private Graph<Node, String> graph;
     private BreadthFirstGraph<Node, String> breadthFirstGraph;
@@ -431,7 +433,7 @@ public class MainViewController {
     @FXML
     protected void depthFirstRoute() {
         clearLines();
-        List<List<Node>> routs = graph.findAllPathsDepthFirstWrapper(start.getValue(), destination.getValue());
+        List<List<Node>> routs = graph.findAllPathsDepthFirstWrapper(start.getValue(), destination.getValue(), Integer.parseInt(maxRoutes.getText()));
         for (List<Node> rout : routs) {
             if (hasWaypoints(rout)) {
                 drawRoute(rout);
@@ -444,7 +446,7 @@ public class MainViewController {
     protected void depthFirstRoutes() {
         clearLines();
 
-        List<List<Node>> routes = graph.findAllPathsDepthFirstWrapper(start.getValue(), destination.getValue());
+        List<List<Node>> routes = graph.findAllPathsDepthFirstWrapper(start.getValue(), destination.getValue(), Integer.parseInt(maxRoutes.getText()));
         Collections.shuffle(routes);
 //        double hue = 0;
 
@@ -465,7 +467,7 @@ public class MainViewController {
         }
         addTreeViewRoutes(routes, Utilities.parseInt(numRoutes.getText()));
         if (routes.isEmpty())
-            numberOfWaypoints.setText("No routs found with this combination of way points");
+            numberOfWaypoints.setText("No routes found with this combination of way points");
         else
             numberOfWaypoints.setText("");
     }
@@ -513,6 +515,8 @@ public class MainViewController {
 
     @FXML
     protected void shortestPath() {
+        clearLines();
+
         //Disconnect the nodes temporarily
         int[][] toReconnect = new int[graph.getAMat().length][graph.getAMat().length];
         for (String waypoint : avoidWaypoints) {
@@ -526,11 +530,11 @@ public class MainViewController {
         }
 
 
-        CostedPath<Node> costedPath = graph.findCheapestPathDijkstraWrapper(start.getValue(), destination.getValue(), cultureSlider.getValue());
+        //CostedPath<Node> costedPath = new CostedPath<>();//graph.findCheapestPathDijkstraWrapper(start.getValue(), destination.getValue(), cultureSlider.getValue());
+        CostedPath<Node> costedPath = insertWayPoints();
         System.out.println(costedPath.getCost());
         System.out.println(costedPath.getCulture());
-        insertWayPoints(costedPath);
-        clearLines();
+
         drawRoute(costedPath.getCheapestPath());
 
         //Reconnect them afterward
@@ -541,23 +545,29 @@ public class MainViewController {
             }
         }
     }
-    private void insertWayPoints(CostedPath<Node> costedPath){
-        List<Node> path = costedPath.getCheapestPath();
-        for (String waypoint: waypoints){
-            ArrayList<CostedPath<Node>> paths = new ArrayList<>();
-            for(Node node: path){
-                paths.add(graph.findCheapestPathDijkstraWrapper(node.getName(), waypoint, cultureSlider.getValue()));
-            }
-            int lowsetCost = 0;
-            for (int i = 0;i<paths.size();i++){
-               if(paths.get(i).getCost()<paths.get(lowsetCost).getCost()){
-                   lowsetCost = i;
-               }
-            }
 
-            path.addAll(lowsetCost, paths.get(lowsetCost).getCheapestPath());
+    private CostedPath<Node> insertWayPoints(){
+        ArrayList<Node> waypoints2 = new ArrayList<>();
+        for (String waypoint: waypoints){
+
+            waypoints2.add(graph.getNodes().get(graph.findIndexByField(waypoint)));
+
+            //ArrayList<CostedPath<Node>> paths = new ArrayList<>();
+//            for(Node node: path){
+//                paths.add(graph.findCheapestPathDijkstraWrapper(node.getName(), waypoint, cultureSlider.getValue()));
+//            }
+//            int lowsetCost = 0;
+//            for (int i = 0;i<paths.size();i++){
+//               if(paths.get(i).getCost()<paths.get(lowsetCost).getCost()){
+//                   lowsetCost = i;
+//               }
+//            }
+//
+//            path.addAll(lowsetCost, paths.get(lowsetCost).getCheapestPath());
 
         }
+
+        return graph.findCheapestPathDijkstraWrapper(start.getValue(), destination.getValue(), waypoints2, cultureSlider.getValue());
     }
 
 

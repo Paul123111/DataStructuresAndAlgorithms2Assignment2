@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment2.controllers.MainViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment2.controllers.MainViewController">
    <children>
       <HBox prefHeight="700.0" prefWidth="914.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -119,16 +119,13 @@
                                     <Insets left="10.0" />
                                  </FlowPane.margin>
                               </Button>
-                              <Button mnemonicParsing="false" onAction="#breadthFirstRout" text="Show Route (Breadth-First)">
+                              <Button mnemonicParsing="false" onAction="#breadthFirstSearchPixelByPixel" text="Breadth First Pixel Based Route">
                                  <FlowPane.margin>
                                     <Insets left="10.0" />
                                  </FlowPane.margin>
                               </Button>
-                              <Button mnemonicParsing="false" onAction="#breadthFirstSearchPixelByPixel" text="Breadth first pixel based route">
-                                 <FlowPane.margin>
-                                    <Insets left="10.0" />
-                                 </FlowPane.margin>
-                              </Button>
+                              <Label text=" Max Route Search (Depth-First): " />
+                              <TextField fx:id="maxRoutes" prefHeight="26.0" prefWidth="42.0" />
                            </children>
                            <padding>
                               <Insets left="40.0" />
@@ -213,6 +210,7 @@
                         <TreeView fx:id="routeTreeView" prefHeight="558.0" prefWidth="208.0" />
                      </children>
                   </FlowPane>
+                  <Label text="Distance" />
                </children>
             </VBox>
          </children>
