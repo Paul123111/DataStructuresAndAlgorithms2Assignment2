@@ -156,6 +156,7 @@ public class MainViewController {
     @FXML
     protected void validateTextFields() {
         Utilities.numericText(numRoutes, 5);
+        Utilities.numericText(maxRoutes, 200);
     }
 
     private void initialImage() {
@@ -376,7 +377,7 @@ public class MainViewController {
 
     @FXML
     protected void breadthFirstSearchPixelByPixel() {
-        int[] path = PixelGraph.breadthFirstSearchWrapper(pixelStart, pixelDestination, pixels);
+        ArrayList<Integer> path = PixelGraph.breadthFirstSearchWrapper2(pixelStart, pixelDestination, pixels, (int) mapView.getImage().getWidth());
         Image image = PixelGraph.changePixels(new Image(Driver.class.getResource("images/ParisLandmarks.png").toString()), path);
 
         for (int i : path) {
