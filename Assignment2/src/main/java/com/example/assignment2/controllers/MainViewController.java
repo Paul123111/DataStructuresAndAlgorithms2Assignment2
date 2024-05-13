@@ -151,7 +151,7 @@ public class MainViewController {
         mapView.setFitWidth(600);
         mapView.setFitHeight(400);
         mapView.setPreserveRatio(false);
-        Image image = new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString());
+        Image image = Utilities.rescaledImage(new Image(Driver.class.getResource("images/ParisPixelByPixel2.png").toString()),0.5);
         mapView.setImage(image);
         pixels = PixelGraph.getPixels(image);
         //PixelGraph.asciiImage(pixels, 600);

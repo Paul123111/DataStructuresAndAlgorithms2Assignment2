@@ -1,6 +1,10 @@
 package com.example.assignment2.utils;
 
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 
 public class Utilities {
     public static int doubleToInt(double doubleToConvert) {
@@ -36,6 +40,22 @@ public class Utilities {
             inIndex ++;
         }
         return output;
+    }
+
+
+    public static Image rescaledImage(Image input, double scale){
+        int width= (int)(input.getWidth()*scale);
+        int height = (int)(input.getHeight()*scale);
+        WritableImage writableImage = new WritableImage(width,height);
+        PixelReader reader = input.getPixelReader();
+        PixelWriter writer = writableImage.getPixelWriter();
+        for(int x = 0;x<width;x++){
+            for(int y = 0;y<height;y++){
+                writer.setColor(x,y,reader.getColor((int)(x/scale),(int)(y/scale)));
+            }
+        }
+
+        return writableImage;
     }
 
 }
