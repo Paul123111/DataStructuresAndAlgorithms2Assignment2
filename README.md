@@ -36,3 +36,4 @@ To add edges, enter the node name and press 'show all possible edges for node', 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 - Waypoint - The node used by the waypoints options. There can be multiple waypoints used by routes. <br>
 - Number of Routes - 'Show All Routes' uses this field to decide the number of possible routes to show. If total number of routes between two nodes < number of routes, then show every possible route. <br>
+- Treeview of Routes - 'Show All Routes' displays the routes it found in this treeview. Click on one of the routes to display it on the map.
